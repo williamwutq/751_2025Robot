@@ -206,10 +206,10 @@ public class ControlBoard {
     double y = driver.leftHorizontalJoystick.getAsDouble();
     double rot = driver.rightHorizontalJoystick.getAsDouble();
     return driveRequest
-        .withVelocityX(0.25 * SwerveConstants.maxSpeed * x * scale)
-        .withVelocityY(0.25 * SwerveConstants.maxSpeed * y * scale)
+        .withVelocityX(SwerveConstants.maxSpeed * x * scale)
+        .withVelocityY(SwerveConstants.maxSpeed * y * scale)
         .withRotationalRate(
-            0.5 * SwerveConstants.maxAngularSpeed * (Math.copySign(rot * rot, rot) * rotScale));
+            SwerveConstants.maxAngularSpeed * (Math.copySign(rot * rot, rot) * rotScale));
   }
 
   public String goalConfidence() {
