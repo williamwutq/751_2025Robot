@@ -178,8 +178,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-        //new AssistCommand().schedule();
-        SwerveSubsystem.getInstance().resetOdotoSim();
+        new AssistCommand().schedule();
+        //SwerveSubsystem.getInstance().resetOdotoSim();
         // CommandScheduler.getInstance().cancelAll();
         // odometry.testResetOdo();
         // SwerveSubsystem.getInstance().resetPose(new Pose2d(2, 4, new Rotation2d()));
