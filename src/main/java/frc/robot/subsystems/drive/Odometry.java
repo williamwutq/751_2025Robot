@@ -458,9 +458,9 @@ public class Odometry extends SubsystemBase {
         .andThen(new WaitUntilCommand(() -> !odometryResetRequested));
   }
 
-  public void testResetOdo() {
-    swerve.resetPose(new Pose2d(0, 0, new Rotation2d(0)));
-  }
+  // public void testResetOdo() {
+  //   swerve.resetPose(new Pose2d(0, 0, new Rotation2d(0)));
+  // }
 
   public Pose2d predictFuturePose(double secondsAhead) {
     Pose2d currentPose = getPose();
@@ -493,7 +493,7 @@ public class Odometry extends SubsystemBase {
       odometryResetRequested = !odometryResetRequested;
     }
 
-    PoseEstimate limelightPose = limelight.getPoseEstimate(getRobotState(), false);
+    PoseEstimate limelightPose = limelight.getPoseEstimate(getRobotState(), false)
     if (odometryResetRequested) {
       // not using photonvision yet
       // EstimatedRobotPose photonVisionPose = photonvision.update(getRobotState().pose);
@@ -514,9 +514,11 @@ public class Odometry extends SubsystemBase {
     }
 
     if (limelightPose
-        != null /*&& limelightPose.pose.getTranslation().getDistance(globalPose.getTranslation()) < 2*/) { // && limelightPose.pose.getTranslation().getDistance(previousRobotState.getPose().getTranslation()) < 1) {
+        != null && limelightPose.pose.getX() != 0 && limelightPose.pose.getY() != 0/*&& limelightPose.pose.getTranslation().getDistance(globalPose.getTranslation()) < 2*/) { // && limelightPose.pose.getTranslation().getDistance(previousRobotState.getPose().getTranslation()) < 1) {
       // TODO: tune
-      swerve.resetPose(new Pose2d(limelightPose.pose.getTranslation(), globalPose.getRotation()));
+      swerve.resetPose(new Pose2d(limelightPose.pose.getTranslation(), globalPose.getRotation(
+        
+      )));
       // swerve.addVisionMeasurement(limelightPose.pose, limelightPose.timestampSeconds,
       // VecBuilder.fill(0.1, 0.1, 9999999));
       // swerve.addVisionMeasurement(limelightPose.pose, limelightPose.timestampSeconds);
@@ -545,7 +547,7 @@ public class Odometry extends SubsystemBase {
     TargetPredictor.PredictionResult prediction =
         TargetPredictor.predictTargetElement(getRobotState(), controlBoard);
 
-    controlBoard.desiredGoal = prediction.getTarget();
+    controlBoard.desiredGoal = GameElement.REEF_BLUE_1;
 
     controlBoard.goalConfidence = prediction.getConfidence();
     SmartDashboard.putString("Odometry/Current Goal", controlBoard.desiredGoal.name());

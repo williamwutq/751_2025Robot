@@ -122,7 +122,7 @@ public class ControlBoard {
             .withName("Precise Control Toggle")); // Fight me owen
 
     /* Driver Assist */
-    // controller.rightTrigger.whileTrue(new AssistCommand());
+    controller.rightTrigger.whileTrue(new AssistCommand());
 
     /* Intake Subsystem */
     controller.leftTrigger.whileTrue(
@@ -206,9 +206,9 @@ public class ControlBoard {
     double y = driver.leftHorizontalJoystick.getAsDouble();
     double rot = driver.rightHorizontalJoystick.getAsDouble();
     return driveRequest
-        .withVelocityX(SwerveConstants.maxSpeed * x * scale)
-        .withVelocityY(SwerveConstants.maxSpeed * y * scale)
-        .withRotationalRate(
+        .withVelocityX(0.2*SwerveConstants.maxSpeed * x * scale)
+        .withVelocityY(0.2*SwerveConstants.maxSpeed * y * scale)
+        .withRotationalRate(0.4*
             SwerveConstants.maxAngularSpeed * (Math.copySign(rot * rot, rot) * rotScale));
   }
 
