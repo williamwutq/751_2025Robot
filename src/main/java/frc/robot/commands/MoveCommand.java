@@ -14,109 +14,109 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MoveCommand extends Command {
-  private static final PathConstraints constraints =
-      new PathConstraints(0.25, 0.5, 0.6 * Math.PI, 0.6 * Math.PI);
+private static final PathConstraints constraints =
+	new PathConstraints(0.25, 0.5, 0.6 * Math.PI, 0.6 * Math.PI);
 
-  private final Pose2d targetPose;
-  private final List<Pose2d> intermediatePoints;
-  private final SwerveSubsystem swerveSubsystem;
+private final Pose2d targetPose;
+private final List<Pose2d> intermediatePoints;
+private final SwerveSubsystem swerveSubsystem;
 
-  private PathPlannerPath path;
-  private Command pathCommand;
-  private final PreciseMoveCommand preciseMoveCommand;
+private PathPlannerPath path;
+private Command pathCommand;
+private final PreciseMoveCommand preciseMoveCommand;
 
-  private boolean isPreciseMove = false;
-  private boolean hasEnded = false;
+private boolean isPreciseMove = false;
+private boolean hasEnded = false;
 
-  public MoveCommand(
-      Pose2d targetPose, List<Pose2d> intermediatePoints, SwerveSubsystem swerveSubsystem) {
-    this.targetPose = targetPose;
-    this.intermediatePoints = new ArrayList<>(intermediatePoints);
-    this.swerveSubsystem = swerveSubsystem;
-    this.preciseMoveCommand = new PreciseMoveCommand(targetPose);
-    addRequirements(swerveSubsystem);
-  }
+public MoveCommand(
+	Pose2d targetPose, List<Pose2d> intermediatePoints, SwerveSubsystem swerveSubsystem) {
+	this.targetPose = targetPose;
+	this.intermediatePoints = new ArrayList<>(intermediatePoints);
+	this.swerveSubsystem = swerveSubsystem;
+	this.preciseMoveCommand = new PreciseMoveCommand(targetPose);
+	addRequirements(swerveSubsystem);
+}
 
-  @Override
-  public void initialize() {
-    SmartDashboard.putBoolean("PP Move Command Active", true);
-    Pose2d currentPose = swerveSubsystem.getPose();
+@Override
+public void initialize() {
+	SmartDashboard.putBoolean("PP Move Command Active", true);
+	Pose2d currentPose = swerveSubsystem.getPose();
 
-    if (distance(currentPose, targetPose) < 0.05
-        && Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getDegrees()) < 3) {
-      System.out.println("Already at target, skipping move.");
-      hasEnded = true;
-      return;
-    }
+	if (distance(currentPose, targetPose) < 0.05
+		&& Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getDegrees()) < 3) {
+	System.out.println("Already at target, skipping move.");
+	hasEnded = true;
+	return;
+	}
 
-    if (intermediatePoints.isEmpty()) {
-      intermediatePoints.add(currentPose);
-    }
-    intermediatePoints.add(targetPose);
+	if (intermediatePoints.isEmpty()) {
+	intermediatePoints.add(currentPose);
+	}
+	intermediatePoints.add(targetPose);
 
-    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(intermediatePoints);
+	List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(intermediatePoints);
 
-    path =
-        new PathPlannerPath(
-            waypoints,
-            constraints,
-            new IdealStartingState(1, targetPose.getRotation()),
-            new GoalEndState(0.15, targetPose.getRotation()));
+	path =
+		new PathPlannerPath(
+			waypoints,
+			constraints,
+			new IdealStartingState(1, targetPose.getRotation()),
+			new GoalEndState(0.15, targetPose.getRotation()));
 
-    path.preventFlipping = true;
+	path.preventFlipping = true;
 
-    pathCommand = AutoBuilder.pathfindThenFollowPath(path, constraints);
-    pathCommand.initialize();
-    System.out.println("Path command initialized.");
-  }
+	pathCommand = AutoBuilder.pathfindThenFollowPath(path, constraints);
+	pathCommand.initialize();
+	System.out.println("Path command initialized.");
+}
 
-  @Override
-  public void execute() {
-    if (hasEnded) return;
+@Override
+public void execute() {
+	if (hasEnded) return;
 
-    if (pathCommand != null && !pathCommand.isFinished()) {
-      pathCommand.execute();
-    } else if ((pathCommand == null || pathCommand.isFinished())
-        && !preciseMoveCommand.isFinished()) {
-      if (!isPreciseMove) {
-        isPreciseMove = true;
-        preciseMoveCommand.initialize();
-      } else {
-        preciseMoveCommand.execute();
-        System.out.println("Precise move running...");
-      }
-    }
-  }
+	if (pathCommand != null && !pathCommand.isFinished()) {
+	pathCommand.execute();
+	} else if ((pathCommand == null || pathCommand.isFinished())
+		&& !preciseMoveCommand.isFinished()) {
+	if (!isPreciseMove) {
+		isPreciseMove = true;
+		preciseMoveCommand.initialize();
+	} else {
+		preciseMoveCommand.execute();
+		System.out.println("Precise move running...");
+	}
+	}
+}
 
-  @Override
-  public boolean isFinished() {
-    boolean finished =
-        (pathCommand == null || pathCommand.isFinished())
-            && (preciseMoveCommand == null || preciseMoveCommand.isFinished());
+@Override
+public boolean isFinished() {
+	boolean finished =
+		(pathCommand == null || pathCommand.isFinished())
+			&& (preciseMoveCommand == null || preciseMoveCommand.isFinished());
 
-    if (finished && !hasEnded) {
-      hasEnded = true;
-      end(false);
-    }
+	if (finished && !hasEnded) {
+	hasEnded = true;
+	end(false);
+	}
 
-    return finished;
-  }
+	return finished;
+}
 
-  @Override
-  public void end(boolean interrupted) {
-    System.out.println("MoveCommand end() called! Interrupted: " + interrupted);
-    SmartDashboard.putBoolean("PP Move Command Active", false);
+@Override
+public void end(boolean interrupted) {
+	System.out.println("MoveCommand end() called! Interrupted: " + interrupted);
+	SmartDashboard.putBoolean("PP Move Command Active", false);
 
-    if (pathCommand != null) {
-      pathCommand.end(interrupted);
-    }
+	if (pathCommand != null) {
+	pathCommand.end(interrupted);
+	}
 
-    if (preciseMoveCommand != null) {
-      preciseMoveCommand.end(interrupted);
-    }
-  }
+	if (preciseMoveCommand != null) {
+	preciseMoveCommand.end(interrupted);
+	}
+}
 
-  private double distance(Pose2d current, Pose2d target) {
-    return Math.hypot(current.getX() - target.getX(), current.getY() - target.getY());
-  }
+private double distance(Pose2d current, Pose2d target) {
+	return Math.hypot(current.getX() - target.getX(), current.getY() - target.getY());
+}
 }
