@@ -143,13 +143,13 @@ public class ControlBoard {
         new InstantCommand(superstructure::requestL4Score).withName("L4 Score"));
 
     /* Climb Subsystem */
-    controller.touchpadButton.whileTrue(
+   /*ontroller.touchpadButton.whileTrue(
         new InstantCommand(superstructure::requestClimb).withName("Climb Elevator Command"));
     controller.dRight.whileTrue(new InstantCommand(climbSubsystem::requestDeployFlap));
     controller.dLeft.whileTrue(new InstantCommand(climbSubsystem::requestStoreFlap));
     controller.dUp.whileTrue(new InstantCommand(climbSubsystem::requestRatchetActive));
     controller.dDown.whileTrue(new InstantCommand(climbSubsystem::requestRatchetInActive));
-
+*/
     //        controller.rightBumper.onTrue(new InstantCommand(SignalLogger::start).withName("Start
     // Signal Logger"));
     //        controller.rightTrigger.onTrue(new InstantCommand(SignalLogger::stop).withName("Stop
@@ -181,11 +181,11 @@ public class ControlBoard {
             .ignoringDisable(true)
             .withName("L4 Score Select"));
 
-    controller.dUp.whileTrue(new InstantCommand(climbSubsystem::requestRatchetActive));
+ /*ontroller.dUp.whileTrue(new InstantCommand(climbSubsystem::requestRatchetActive));
     controller.dDown.whileTrue(new InstantCommand(climbSubsystem::requestRatchetInActive));
     controller.dLeft.onTrue(
         new InstantCommand(superstructure::requestClimb).withName("Climb Elevator Command"));
-
+*/
     // Elevator Go To Selected Position (RightTrigger)
     controller.rightTrigger.whileTrue(
         new ElevatorWristCommand()); // Go to selected position while held, on release go to idle
