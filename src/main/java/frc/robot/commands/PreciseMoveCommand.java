@@ -20,8 +20,8 @@ public class PreciseMoveCommand extends Command {
   private final Timer timer = new Timer();
   private final SwerveRequest.ApplyRobotSpeeds m_pathApplyFieldSpeeds;
 
-  private final PIDController xController = new PIDController(1, 0.0, 0.2);
-  private final PIDController yController = new PIDController(1, 0.0, 0.2);
+  private final PIDController xController = new PIDController(2, 0.0, 0.2);
+  private final PIDController yController = new PIDController(2, 0.0, 0.2);
   private final ProfiledPIDController thetaController;
 
   private static final double MAX_VELOCITY = 0.25;
