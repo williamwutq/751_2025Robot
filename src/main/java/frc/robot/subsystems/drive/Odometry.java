@@ -28,61 +28,61 @@ import frc.robot.util.FieldConstants;
 import frc.robot.util.FieldConstants.GameElement;
 
 public class Odometry extends SubsystemBase {
-  private static Odometry instance;
-  private final SwerveSubsystem swerve;
-  private final LimelightSubsystem limelight;
-  private final PhotonvisionSubsystem photonvision;
-  private final ControlBoard controlBoard;
-  private final Pigeon2 gyro;
-  /* Status Signals */
-  private final StatusSignal<AngularVelocity> rollStatusSignal;
-  private final StatusSignal<AngularVelocity> pitchStatusSignal;
-  private final StatusSignal<AngularVelocity> yawStatusSignal;
+private static Odometry instance;
+private final SwerveSubsystem swerve;
+private final LimelightSubsystem limelight;
+private final PhotonvisionSubsystem photonvision;
+private final ControlBoard controlBoard;
+private final Pigeon2 gyro;
+/* Status Signals */
+private final StatusSignal<AngularVelocity> rollStatusSignal;
+private final StatusSignal<AngularVelocity> pitchStatusSignal;
+private final StatusSignal<AngularVelocity> yawStatusSignal;
 
-  private boolean odometryResetRequested = false;
-  private static final boolean limelightReset = true;
+private boolean odometryResetRequested = false;
+private static final boolean limelightReset = true;
 
-  // --- ADD THESE FIELDS FOR VELOCITY CALC ---
-  private Pose2d previousPose = new Pose2d();
-  private double previousTime = 0.0;
+// --- ADD THESE FIELDS FOR VELOCITY CALC ---
+private Pose2d previousPose = new Pose2d();
+private double previousTime = 0.0;
 
-  private final Field2d m_field = new Field2d();
+private final Field2d m_field = new Field2d();
 
-  Pose3d simulationPose = new Pose3d();
-  private static Pose2d globalPose = new Pose2d(0, 0, new Rotation2d(0));
+Pose3d simulationPose = new Pose3d();
+private static Pose2d globalPose = new Pose2d(0, 0, new Rotation2d(0));
 
-  StructPublisher<Pose3d> publisher =
-      NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose3d.struct).publish();
+StructPublisher<Pose3d> publisher =
+	NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose3d.struct).publish();
 
-  /// StructPublisher<Pose3d> predictPublisher = NetworkTableInstance.getDefault()
-  // .getStructTopic("PredictedElementPose", Pose3d.struct).publish();
+/// StructPublisher<Pose3d> predictPublisher = NetworkTableInstance.getDefault()
+// .getStructTopic("PredictedElementPose", Pose3d.struct).publish();
 
-  private RobotState.Velocity2D linearVelocity = new RobotState.Velocity2D(0, 0);
+private RobotState.Velocity2D linearVelocity = new RobotState.Velocity2D(0, 0);
 
-  public static class RobotState {
-    public Pose2d pose;
-    public Velocity2D velocity;
-    public AngularVelocity3D angularVelocity;
+public static class RobotState {
+	public Pose2d pose;
+	public Velocity2D velocity;
+	public AngularVelocity3D angularVelocity;
 
-    public RobotState(Pose2d pose, Velocity2D velocity, AngularVelocity3D angularVelocity) {
-      this.pose = pose;
-      this.velocity = velocity;
-      this.angularVelocity = angularVelocity;
-    }
+	public RobotState(Pose2d pose, Velocity2D velocity, AngularVelocity3D angularVelocity) {
+	this.pose = pose;
+	this.velocity = velocity;
+	this.angularVelocity = angularVelocity;
+	}
 
-    public Pose2d getPose() {
-      return pose;
-    }
+	public Pose2d getPose() {
+	return pose;
+	}
 
-    public Velocity2D getVelocity() {
-      return velocity;
-    }
+	public Velocity2D getVelocity() {
+	return velocity;
+	}
 
-    public AngularVelocity3D getAngularVelocity() {
-      return angularVelocity;
-    }
+	public AngularVelocity3D getAngularVelocity() {
+	return angularVelocity;
+	}
 
-    public record AngularVelocity3D(double roll, double pitch, double yaw) {}
+	public record AngularVelocity3D(double roll, double pitch, double yaw) {}
 
     public record Velocity2D(double x, double y) {}
   }
