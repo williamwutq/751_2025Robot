@@ -20,21 +20,21 @@ import frc.robot.util.FieldConstants.GameElement.Branch;
 import frc.robot.util.FieldConstants.GameElement.ScoreLevel;
 
 public class ControlBoard {
-  private static ControlBoard instance;
+private static ControlBoard instance;
 
-  /* Controllers */
-  private PS5Controller driver = null;
-  private PS5Controller operator = null;
+/* Controllers */
+private PS5Controller driver = null;
+private PS5Controller operator = null;
 
-  private enum ControllerPreset {
-    DRIVER(0),
-    OPERATOR(1);
+private enum ControllerPreset {
+	DRIVER(0),
+	OPERATOR(1);
 
-    private final int port;
+	private final int port;
 
-    ControllerPreset(int port) {
-      this.port = port;
-    }
+	ControllerPreset(int port) {
+	this.port = port;
+	}
 
     public int port() {
       return port;
@@ -158,12 +158,12 @@ public class ControlBoard {
 
   private void configureOperatorBindings(PS5Controller controller) {
     // Select Score Branch (LeftBumper, TouchpadClick, RightBumper)
-    //        controller.leftBumper.onTrue(new InstantCommand(() -> selectedBranch =
-    // Branch.LEFT).ignoringDisable(true).withName("Select Left Branch"));
-    //        controller.touchpadButton.onTrue(new InstantCommand(() -> selectedBranch =
-    // Branch.CENTER).ignoringDisable(true).withName("Select Center Branch"));
-    //        controller.rightBumper.onTrue(new InstantCommand(() -> selectedBranch =
-    // Branch.RIGHT).ignoringDisable(true).withName("Select Right Branch"));
+           controller.leftBumper.onTrue(new InstantCommand(() -> selectedBranch =
+    Branch.LEFT).ignoringDisable(true).withName("Select Left Branch"));
+           controller.touchpadButton.onTrue(new InstantCommand(() -> selectedBranch =
+    Branch.CENTER).ignoringDisable(true).withName("Select Center Branch"));
+           controller.rightBumper.onTrue(new InstantCommand(() -> selectedBranch =
+    Branch.RIGHT).ignoringDisable(true).withName("Select Right Branch"));
 
     // Select Score Level (TriangleButton, XButton)
     controller.squareButton.whileTrue(

@@ -12,159 +12,159 @@ import frc.robot.subsystems.drive.SwerveConstants;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 
 public class PreciseMoveCommand extends Command {
-  private final SwerveSubsystem swerveSubsystem = SwerveSubsystem.getInstance();
-  private final Odometry odometry = Odometry.getInstance();
+private final SwerveSubsystem swerveSubsystem = SwerveSubsystem.getInstance();
+private final Odometry odometry = Odometry.getInstance();
 
-  private final Pose2d targetPose;
+private final Pose2d targetPose;
 
-  private final Timer timer = new Timer();
-  private final SwerveRequest.ApplyRobotSpeeds m_pathApplyFieldSpeeds;
+private final Timer timer = new Timer();
+private final SwerveRequest.ApplyRobotSpeeds m_pathApplyFieldSpeeds;
 
-  private final PIDController xController = new PIDController(1, 0.0, 0.2);
-  private final PIDController yController = new PIDController(1, 0.0, 0.2);
-  private final ProfiledPIDController thetaController;
+private final PIDController xController = new PIDController(1.25, 0.0, 0.2);
+private final PIDController yController = new PIDController(1.25, 0.0, 0.2);
+private final ProfiledPIDController thetaController;
 
-  private static final double MAX_VELOCITY = 0.5;
-  private static final double MAX_ACCELERATION = 0.5;
+private static final double MAX_VELOCITY = 0.25;
+private static final double MAX_ACCELERATION = 0.5;
 
-  private double prevVx = 0;
-  private double prevVy = 0;
-  private double prevOmega = 0;
+private double prevVx = 0;
+private double prevVy = 0;
+private double prevOmega = 0;
 
-  private final Timer stuckTimer = new Timer();
-  private Pose2d lastPose = new Pose2d();
-  private static final double STUCK_TIMEOUT_SECONDS = 0.5;
-  private static final double STUCK_POSITION_THRESHOLD = 0.03; // meters
+private final Timer stuckTimer = new Timer();
+private Pose2d lastPose = new Pose2d();
+private static final double STUCK_TIMEOUT_SECONDS = 0.5;
+private static final double STUCK_POSITION_THRESHOLD = 0.03; // meters
 
-  public PreciseMoveCommand(Pose2d targetPose) {
-    this.targetPose = targetPose;
-    this.m_pathApplyFieldSpeeds = new SwerveRequest.ApplyRobotSpeeds();
-    thetaController =
-        new ProfiledPIDController(
-            2, 0.05, 0, SwerveConstants.AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    thetaController.setTolerance(Math.toRadians(2), Math.toRadians(1));
+public PreciseMoveCommand(Pose2d targetPose) {
+	this.targetPose = targetPose;
+	this.m_pathApplyFieldSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+	thetaController =
+		new ProfiledPIDController(
+			2, 0.05, 0, SwerveConstants.AutoConstants.kThetaControllerConstraints);
+	thetaController.enableContinuousInput(-Math.PI, Math.PI);
+	thetaController.setTolerance(Math.toRadians(2), Math.toRadians(1));
 
-    addRequirements(swerveSubsystem);
-  }
+	addRequirements(swerveSubsystem);
+}
 
-  @Override
-  public void initialize() {
-    Pose2d currentPose = odometry.getPose();
+@Override
+public void initialize() {
+	Pose2d currentPose = odometry.getPose();
 
-    // if (isClose(currentPose, targetPose, 0.05)
-    //     && Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getDegrees()) < 3)
-    // {
-    //     System.out.println("Already at target position.");
-    //     end(true);
-    //     return;
-    // }
+	// if (isClose(currentPose, targetPose, 0.05)
+	//     && Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getDegrees()) < 3)
+	// {
+	//     System.out.println("Already at target position.");
+	//     end(true);
+	//     return;
+	// }
 
-    System.out.println("Starting MoveCommand to: " + targetPose);
-    thetaController.reset(currentPose.getRotation().getRadians());
+	System.out.println("Starting MoveCommand to: " + targetPose);
+	thetaController.reset(currentPose.getRotation().getRadians());
 
-    prevVx = odometry.getVelocityX();
-    prevVy = odometry.getVelocityY();
-    prevOmega = odometry.getFieldYawRate();
+	prevVx = odometry.getVelocityX();
+	prevVy = odometry.getVelocityY();
+	prevOmega = odometry.getFieldYawRate();
 
-    timer.reset();
-    timer.start();
+	timer.reset();
+	timer.start();
 
-    lastPose = currentPose;
-    stuckTimer.reset();
-    stuckTimer.start();
-  }
+	lastPose = currentPose;
+	stuckTimer.reset();
+	stuckTimer.start();
+}
 
-  @Override
-  public void execute() {
-    // System.out.println("tangius");
-    Pose2d currentPose = swerveSubsystem.getPose();
-    Pose2d goal = targetPose;
+@Override
+public void execute() {
+	// System.out.println("tangius");
+	Pose2d currentPose = swerveSubsystem.getPose();
+	Pose2d goal = targetPose;
 
-    double feedforwardVx = (goal.getX() - currentPose.getX()) * 0.5;
-    double feedforwardVy = (goal.getY() - currentPose.getY()) * 0.5;
+	double feedforwardVx = (goal.getX() - currentPose.getX()) * 0.5;
+	double feedforwardVy = (goal.getY() - currentPose.getY()) * 0.5;
 
-    double feedbackVx = xController.calculate(currentPose.getX(), goal.getX());
-    double feedbackVy = yController.calculate(currentPose.getY(), goal.getY());
-    double feedbackOmega =
-        thetaController.calculate(
-            currentPose.getRotation().getRadians(), goal.getRotation().getRadians());
+	double feedbackVx = xController.calculate(currentPose.getX(), goal.getX());
+	double feedbackVy = yController.calculate(currentPose.getY(), goal.getY());
+	double feedbackOmega =
+		thetaController.calculate(
+			currentPose.getRotation().getRadians(), goal.getRotation().getRadians());
 
-    double headingDiff = goal.getRotation().minus(currentPose.getRotation()).getRadians();
-    headingDiff = Math.atan2(Math.sin(headingDiff), Math.cos(headingDiff));
+	double headingDiff = goal.getRotation().minus(currentPose.getRotation()).getRadians();
+	headingDiff = Math.atan2(Math.sin(headingDiff), Math.cos(headingDiff));
 
-    double feedforwardOmega = 0.0;
-    if (Math.abs(headingDiff) > Math.toRadians(5)) {
-      feedforwardOmega = 0.1 * Math.signum(headingDiff);
-    }
+	double feedforwardOmega = 0.0;
+	if (Math.abs(headingDiff) > Math.toRadians(5)) {
+	feedforwardOmega = 0.1 * Math.signum(headingDiff);
+	}
 
-    double vx = feedforwardVx + feedbackVx;
-    double vy = feedforwardVy + feedbackVy;
-    double rawOmega = feedbackOmega + feedforwardOmega;
+	double vx = feedforwardVx + feedbackVx;
+	double vy = feedforwardVy + feedbackVy;
+	double rawOmega = feedbackOmega + feedforwardOmega;
 
-    double dt = timer.get();
-    double vxLimited = applyAccelerationLimit(prevVx, vx, dt);
-    double vyLimited = applyAccelerationLimit(prevVy, vy, dt);
-    double omegaLimited = applyAccelerationLimit(prevOmega, rawOmega, dt);
+	double dt = timer.get();
+	double vxLimited = applyAccelerationLimit(prevVx, vx, dt);
+	double vyLimited = applyAccelerationLimit(prevVy, vy, dt);
+	double omegaLimited = applyAccelerationLimit(prevOmega, rawOmega, dt);
 
-    vxLimited = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, vxLimited));
-    vyLimited = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, vyLimited));
-    omegaLimited =
-        Math.max(
-            -SwerveConstants.AutoConstants.kMaxAngularSpeedRadiansPerSecond,
-            Math.min(SwerveConstants.AutoConstants.kMaxAngularSpeedRadiansPerSecond, omegaLimited));
+	vxLimited = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, vxLimited));
+	vyLimited = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, vyLimited));
+	omegaLimited =
+		Math.max(
+			-SwerveConstants.AutoConstants.kMaxAngularSpeedRadiansPerSecond,
+			Math.min(SwerveConstants.AutoConstants.kMaxAngularSpeedRadiansPerSecond, omegaLimited));
 
-    prevVx = vxLimited;
-    prevVy = vyLimited;
-    prevOmega = omegaLimited;
-    timer.reset();
+	prevVx = vxLimited;
+	prevVy = vyLimited;
+	prevOmega = omegaLimited;
+	timer.reset();
 
-    ChassisSpeeds speeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            vxLimited, vyLimited, omegaLimited, currentPose.getRotation());
+	ChassisSpeeds speeds =
+		ChassisSpeeds.fromFieldRelativeSpeeds(
+			vxLimited, vyLimited, omegaLimited, currentPose.getRotation());
 
-    swerveSubsystem.setControl(m_pathApplyFieldSpeeds.withSpeeds(speeds));
-  }
+	swerveSubsystem.setControl(m_pathApplyFieldSpeeds.withSpeeds(speeds));
+}
 
-  private boolean isClose(Pose2d current, Pose2d target, double tolerance) {
-    double positionError =
-        Math.hypot(current.getX() - target.getX(), current.getY() - target.getY());
-    return positionError < tolerance;
-  }
+private boolean isClose(Pose2d current, Pose2d target, double tolerance) {
+	double positionError =
+		Math.hypot(current.getX() - target.getX(), current.getY() - target.getY());
+	return positionError < tolerance;
+}
 
-  private double applyAccelerationLimit(double previous, double desired, double dt) {
-    double maxChange = MAX_ACCELERATION * dt;
-    double lowerLimit = previous - maxChange;
-    double upperLimit = previous + maxChange;
-    return Math.max(lowerLimit, Math.min(upperLimit, desired));
-  }
+private double applyAccelerationLimit(double previous, double desired, double dt) {
+	double maxChange = MAX_ACCELERATION * dt;
+	double lowerLimit = previous - maxChange;
+	double upperLimit = previous + maxChange;
+	return Math.max(lowerLimit, Math.min(upperLimit, desired));
+}
 
-  @Override
-  public boolean isFinished() {
-    Pose2d currentPose = odometry.getPose();
+@Override
+public boolean isFinished() {
+	Pose2d currentPose = odometry.getPose();
 
-    double positionDelta =
-        Math.hypot(currentPose.getX() - lastPose.getX(), currentPose.getY() - lastPose.getY());
+	double positionDelta =
+		Math.hypot(currentPose.getX() - lastPose.getX(), currentPose.getY() - lastPose.getY());
 
-    if (positionDelta > STUCK_POSITION_THRESHOLD) {
-      stuckTimer.reset();
-      stuckTimer.start();
-      lastPose = currentPose;
-      System.out.println("Robot moved. Resetting stuck timer.");
-    } else if (stuckTimer.get() > STUCK_TIMEOUT_SECONDS) {
-      System.out.println("Robot seems stuck. Ending command.");
-      return true;
-    }
+	if (positionDelta > STUCK_POSITION_THRESHOLD) {
+	stuckTimer.reset();
+	stuckTimer.start();
+	lastPose = currentPose;
+	System.out.println("Robot moved. Resetting stuck timer.");
+	} else if (stuckTimer.get() > STUCK_TIMEOUT_SECONDS) {
+	System.out.println("Robot seems stuck. Ending command.");
+	return true;
+	}
 
-    return isClose(targetPose, currentPose, 0.02)
-        && Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getDegrees()) < 2;
-  }
+	return isClose(targetPose, currentPose, 0.02)
+		&& Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getDegrees()) < 2;
+}
 
-  @Override
-  public void end(boolean interrupted) {
-    timer.stop();
-    stuckTimer.stop();
-    swerveSubsystem.setControl(m_pathApplyFieldSpeeds.withSpeeds(new ChassisSpeeds(0.0, 0.0, 0.0)));
-    System.out.println("Ending tangius");
-  }
+@Override
+public void end(boolean interrupted) {
+	timer.stop();
+	stuckTimer.stop();
+	swerveSubsystem.setControl(m_pathApplyFieldSpeeds.withSpeeds(new ChassisSpeeds(0.0, 0.0, 0.0)));
+	System.out.println("Ending tangius");
+}
 }
