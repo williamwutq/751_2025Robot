@@ -26,6 +26,7 @@ import frc.robot.subsystems.vision.PhotonvisionSubsystem;
 import frc.robot.util.ControlBoard;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.FieldConstants.GameElement;
+import com.ctre.phoenix6.Utils;
 
 public class Odometry extends SubsystemBase {
 private static Odometry instance;
@@ -704,7 +705,7 @@ public static class RobotState {
       odometryResetRequested = !odometryResetRequested;
     }
 
-    PoseEstimate limelightPose = limelight.getPoseEstimate(getRobotState(), false);
+    PoseEstimate limelightPose = limelight.getPoseEstimate(getRobotState(), true);
     if (odometryResetRequested) {
       // not using photonvision yet
       // EstimatedRobotPose photonVisionPose = photonvision.update(getRobotState().pose);
@@ -724,14 +725,12 @@ public static class RobotState {
     } else {
     }
 
-    if (limelightPose
-        != null && limelightPose.pose.getX() != 0 && limelightPose.pose.getY() != 0/*&& limelightPose.pose.getTranslation().getDistance(globalPose.getTranslation()) < 2*/) { // && limelightPose.pose.getTranslation().getDistance(previousRobotState.getPose().getTranslation()) < 1) {
+    if (limelightPose != null && limelightPose.pose.getX() != 0 && limelightPose.pose.getY() != 0/*&& limelightPose.pose.getTranslation().getDistance(globalPose.getTranslation()) < 2*/) { // && limelightPose.pose.getTranslation().getDistance(previousRobotState.getPose().getTranslation()) < 1) {
       // TODO: tune
-      swerve.resetPose(new Pose2d(limelightPose.pose.getTranslation(), globalPose.getRotation()));
-      // swerve.addVisionMeasurement(limelightPose.pose, limelightPose.timestampSeconds,
+      //swerve.resetPose(new Pose2d(limelightPose.pose.getTranslation(), globalPose.getRotation()));
       // VecBuilder.fill(0.1, 0.1, 9999999));
       Pose2d compositePose = new Pose2d(limelightPose.pose.getTranslation(), globalPose.getRotation());
-      // swerve.addVisionMeasurement(compositePose, limelightPose.timestampSeconds);
+      swerve.addVisionMeasurement(compositePose, Utils.fpgaToCurrentTime(limelightPose.timestampSeconds));
       // swerve.resetPose(new Pose2d(limelightPose.pose.getTranslation(),
       // globalPose.getRotation()));
     }
