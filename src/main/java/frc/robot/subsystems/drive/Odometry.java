@@ -705,8 +705,8 @@ public static class RobotState {
       odometryResetRequested = !odometryResetRequested;
     }
     RobotState currentState = getRobotState();
-    currentState.pose = new Pose2d(globalPose.getTranslation(), TargetPredictorSimple.ALLIANCE_IS_BLUE ? currentState.pose.getRotation() : currentState.pose.getRotation().plus(new Rotation2d(Math.PI)));
-    PoseEstimate limelightPose = limelight.getPoseEstimate(currentState, true);
+    currentState.pose = new Pose2d(globalPose.getTranslation(), TargetPredictorSimple.ALLIANCE_IS_BLUE ? currentState.pose.getRotation() : currentState.pose.getRotation().plus(null));
+    PoseEstimate limelightPose = limelight.getPoseEstimate(getRobotState(), true);
     if (odometryResetRequested) {
       // not using photonvision yet
       // EstimatedRobotPose photonVisionPose = photonvision.update(getRobotState().pose);
@@ -726,7 +726,7 @@ public static class RobotState {
     } else {
     }
 
-    if (limelightPose != null && !limelightPose.equals(new Pose2d(0, 0, new Rotation2d(0)))/*&& limelightPose.pose.getTranslation().getDistance(globalPose.getTranslation()) < 2*/) { // && limelightPose.pose.getTranslation().getDistance(previousRobotState.getPose().getTranslation()) < 1) {
+    if (limelightPose != null && limelightPose.pose.getX() != 0 && limelightPose.pose.getY() != 0/*&& limelightPose.pose.getTranslation().getDistance(globalPose.getTranslation()) < 2*/) { // && limelightPose.pose.getTranslation().getDistance(previousRobotState.getPose().getTranslation()) < 1) {
       // TODO: tune
       //swerve.resetPose(new Pose2d(limelightPose.pose.getTranslation(), globalPose.getRotation()));
       // VecBuilder.fill(0.1, 0.1, 9999999));
