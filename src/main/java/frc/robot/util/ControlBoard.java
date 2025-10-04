@@ -199,16 +199,16 @@ private enum ControllerPreset {
     if (driver == null) return null;
 
     boolean tippyMode = ElevatorWristSubsystem.getInstance().isTall();
-    double scale = preciseControl || tippyMode ? 0.25 : 1.0;
+    double scale = preciseControl || tippyMode ? 0.5 : 1.0;
     double rotScale = preciseControl || tippyMode ? 0.50 : 1.0;
 
     double x = driver.leftVerticalJoystick.getAsDouble();
     double y = driver.leftHorizontalJoystick.getAsDouble();
     double rot = driver.rightHorizontalJoystick.getAsDouble();
     return driveRequest
-        .withVelocityX(0.2*SwerveConstants.maxSpeed * x * scale)
-        .withVelocityY(0.2*SwerveConstants.maxSpeed * y * scale)
-        .withRotationalRate(0.4*
+        .withVelocityX(0.6 * SwerveConstants.maxSpeed * x * scale)
+        .withVelocityY(0.6*SwerveConstants.maxSpeed * y * scale)
+        .withRotationalRate(0.8*
             SwerveConstants.maxAngularSpeed * (Math.copySign(rot * rot, rot) * rotScale));
   }
 
