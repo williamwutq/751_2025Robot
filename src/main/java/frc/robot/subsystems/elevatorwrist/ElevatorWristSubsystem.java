@@ -29,7 +29,7 @@ public enum ElevatorState {
 	//        L1_SCORE(0, 0, LightsSubsystem.Colors.BLUE),
 	L2_SCORE(6.7, 145, LightsSubsystem.Colors.CYAN),
 	L3_SCORE(17.7, 145, LightsSubsystem.Colors.AQUAMARINE),
-	L4_SCORE(32, 150, LightsSubsystem.Colors.PURPLE),
+	L4_SCORE(31.7, 150, LightsSubsystem.Colors.PURPLE),
 	CLIMB(8.5, 180, LightsSubsystem.Colors.PINK); // just get intake out of the way
 
 	/** The height of the elevator in inches. */

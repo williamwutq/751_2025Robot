@@ -705,8 +705,8 @@ public static class RobotState {
       odometryResetRequested = !odometryResetRequested;
     }
     RobotState currentState = getRobotState();
-    currentState.pose = new Pose2d(globalPose.getTranslation(), TargetPredictorSimple.ALLIANCE_IS_BLUE ? currentState.pose.getRotation() : currentState.pose.getRotation().plus(null));
-    PoseEstimate limelightPose = limelight.getPoseEstimate(getRobotState(), true);
+    currentState.pose = new Pose2d(globalPose.getTranslation(), currentState.pose.getRotation());
+    PoseEstimate limelightPose = limelight.getPoseEstimate(currentState, true);
     if (odometryResetRequested) {
       // not using photonvision yet
       // EstimatedRobotPose photonVisionPose = photonvision.update(getRobotState().pose);

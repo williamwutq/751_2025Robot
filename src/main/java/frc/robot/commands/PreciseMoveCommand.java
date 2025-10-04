@@ -20,11 +20,11 @@ private final Pose2d targetPose;
 private final Timer timer = new Timer();
 private final SwerveRequest.ApplyRobotSpeeds m_pathApplyFieldSpeeds;
 
-private final PIDController xController = new PIDController(2, 0.0, 0.2);
-private final PIDController yController = new PIDController(2, 0.0, 0.2);
+private final PIDController xController = new PIDController(1.25, 0.0, 0.2);
+private final PIDController yController = new PIDController(1.25, 0.0, 0.2);
 private final ProfiledPIDController thetaController;
 
-private static final double MAX_VELOCITY = 0.25;
+private static final double MAX_VELOCITY = 0.5;
 private static final double MAX_ACCELERATION = 0.5;
 
 private double prevVx = 0;

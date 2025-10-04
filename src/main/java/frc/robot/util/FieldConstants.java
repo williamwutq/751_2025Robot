@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class FieldConstants {
   public static final double EPSILON = 1e-6;
-  public static final double CORAL_OFFSET = 0.16; ///0.206; // meters
+  public static final double CORAL_OFFSET = 0.2; ///0.206; // meters
 
 // Game elements, actual values from april tags. might be a bit off, as the
 // locations are based off of april tag locations.

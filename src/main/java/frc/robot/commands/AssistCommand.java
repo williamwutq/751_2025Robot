@@ -66,7 +66,7 @@ public void initialize() {
 
 	Rotation2d targetRotation = gameElement.getLocation().getRotation().minus(Rotation2d.k180deg);
 
-	Pose2d offsetPose1 = GameElement.getPoseWithOffset(elementPose, 0.45);
+	Pose2d offsetPose1 = GameElement.getPoseWithOffset(elementPose, 0.4);
 
 	List<Pose2d> waypoints = new ArrayList<>();
 
